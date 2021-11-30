@@ -16,6 +16,8 @@ app.use(cors());
 app.use("/files", express.static(path.join("files")));
 require("dotenv").config();
 
+console.log(process.env.DB_CONNECT);
+
 // Configuracion de la conexion a la bd
 mongoose
   .connect(process.env.DB_CONNECT)
