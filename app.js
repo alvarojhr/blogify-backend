@@ -14,12 +14,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use("/files", express.static(path.join("files")));
+require("dotenv").config();
 
 // Configuracion de la conexion a la bd
 mongoose
-  .connect(
-    "mongodb+srv://dbUser:BWn65Euo8jT5QGik@cluster0.h306v.mongodb.net/Blogify?retryWrites=true&w=majority"
-  )
+  .connect(process.env.DB_CONNECT)
   .then(() => {
     console.log("Estamos conectados a nuestra BD");
   })
