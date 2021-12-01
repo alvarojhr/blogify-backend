@@ -3,21 +3,31 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
 exports.signup = (req, res) => {
-  bcrypt.hash(req.body.password, 10).then((hash) => {
-    const newUser = new User({
-      username: req.body.name,
-      email: req.body.email,
-      password: hash,
-    });
+  User.findOne({ email: req.body.email }).then((user) => {
+    //Si el usuario no existe
+    if (!user) {
+      bcrypt.hash(req.body.password, 10).then((hash) => {
+        const newUser = new User({
+          username: req.body.name,
+          email: req.body.email,
+          password: hash,
+        });
 
-    newUser
-      .save()
-      .then((result) => {
-        res.status(201).json({ message: "Usuario creado" });
-      })
-      .catch((err) => {
-        res.status(500).json({ error: err });
+        newUser
+          .save()
+          .then((result) => {
+            console.log(result);
+            res
+              .status(201)
+              .json({ message: "Usuario creado", userId: result._id });
+          })
+          .catch((err) => {
+            res.status(500).json({ error: err });
+          });
       });
+    } else {
+      res.status(201).json({ message: "Usuario existente", userId: user._id });
+    }
   });
 };
 
