@@ -63,6 +63,26 @@ exports.login = (req, res) => {
     });
 };
 
+exports.getToken = (req, res) => {
+  const tokenGoogle = jwt.decode(req.body.token);
+  const exp = new Date(tokenGoogle.exp * 1000);
+  const now = new Date();
+
+  if (
+    tokenGoogle.azp === process.env.CLIENT_ID_GOOGLE &&
+    tokenGoogle.aud === process.env.CLIENT_ID_GOOGLE &&
+    exp > now
+  ) {
+    const token = jwt.sign(
+      { email: tokenGoogle.email, userId: req.body.userId },
+      "MisionTic2021_secret_for_Blogify",
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ token: token, expiresIn: 3600 });
+  }
+};
+
 exports.getUser = (req, res) => {
   User.findById(req.params.userId).then((user) => {
     res.status(200).json({ username: user.username });
